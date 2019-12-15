@@ -207,7 +207,7 @@ module maindec(input   logic  [5:0] op,
      6'b000010: controls <= 16'b00000001000__00000; //J
   	 6'b000101: controls <= 16'b00001000001__00000; //BNE
      6'b001101: controls <= 16'b10100000010__00000; //ORI
-	 default:   controls <= 16'bxxxxxxxxxxxxxxxx; //???
+	   default:   controls <= 16'bxxxxxxxxxxxxxxxx; //???
    endcase
 endmodule
 
@@ -324,10 +324,10 @@ logic [1:0]  float_forwardaE, float_forwardbE;
 			float_ftD, float_fsD, float_ftE, float_fsE
 			,
 			 float_writeregE, float_writeregM, 
-             float_writeregW,float_regwriteE, float_regwriteM, float_regwriteW, 
-             float_memtoregE, float_memtoregM,
+       float_writeregW,float_regwriteE, float_regwriteM, float_regwriteW, 
+       float_memtoregE, float_memtoregM,
  			 float_forwardaD, float_forwardbD, float_forwardaE, 
-             float_forwardbE
+       float_forwardbE
              );
 
  // next PC logic (operates in fetch and decode)
@@ -432,7 +432,7 @@ mux2 #(5)   float_wrmux(float_ftE, float_fdE, float_regdstE, float_writeregE);
 flopr #(32) float_r1W(clk, reset, fpuoutM, fpuoutW);
 //flopr #(32) float_r2W(clk, reset, float_readdataM, float_readdataW);
 flopr #(5)  float_r3W(clk, reset, float_writeregM, float_writeregW);
-mux2 #(32)  float_resmux(fpuoutW, readdataM, float_memtoregW, float_resultW);
+mux2 #(32)  float_resmux(fpuoutW, readdataW, float_memtoregW, float_resultW);
  always_ff @(negedge clk)
  if (float_memwriteM)
  $display("true"); 
@@ -458,8 +458,10 @@ module regfile(input  logic        clk,
   // on falling edge of clk
 
   always_ff @(negedge clk)
+begin
     if (we3) rf[wa3] <= wd3;	
-
+    $display("indx%d REGval:%d\n",wa3,wd3);
+end
   assign rd1 = (ra1 != 0) ? rf[ra1] : 0;
   assign rd2 = (ra2 != 0) ? rf[ra2] : 0;
 endmodule
@@ -525,8 +527,8 @@ module hazard(input   logic  [4:0] rsD, rtD, rsE, rtE,
 
 
 
-assign float_forwardaD = (float_fsD !=0 & float_fsD == float_writeregM & float_regwriteM);
-assign float_forwardbD = (float_ftD !=0 & float_ftD == float_writeregM & float_regwriteM);
+//assign float_forwardaD = (float_fsD !=0 & float_fsD == float_writeregM & float_regwriteM);
+//assign float_forwardbD = (float_ftD !=0 & float_ftD == float_writeregM & float_regwriteM);
  // forwarding sources to E stage (ALU)
  always_comb
    begin
@@ -623,9 +625,9 @@ module floprc #(parameter WIDTH = 8)
                input   logic    [WIDTH-1:0] d, 
                output  logic   [WIDTH-1:0] q);
  always_ff @(posedge clk, posedge reset)
-   if      (reset) q <= #1 0;
-   else if (clear) q <= #1 0;
-   else            q <= #1 d;
+   if      (reset) q <= 0;
+   else if (clear) q <= 0;
+   else            q <= d;
 endmodule
 
 
@@ -636,9 +638,9 @@ module flopenrc #(parameter WIDTH = 8)
                  input   logic  [WIDTH-1:0] d, 
                  output  logic [WIDTH-1:0] q);
  always_ff @(posedge clk, posedge reset)
-   if      (reset) q <= #1 0;
-   else if (clear) q <= #1 0;
-   else if (en)    q <= #1 d;
+   if      (reset) q <= 0;
+   else if (clear) q <= 0;
+   else if (en)    q <= d;
 endmodule
 
 
@@ -725,7 +727,7 @@ module imem(input   logic  [5:0]  a,
  logic  [31:0] RAM[63:0];
  initial
    begin
-     $readmemh("negs.dat",RAM);
+     $readmemh("negs1.dat",RAM);
    end
  assign rd = RAM[a]; // word aligned
 endmodule

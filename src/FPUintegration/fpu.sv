@@ -45,8 +45,8 @@ always
     end
 
 
-//    always_comb
-    always_ff @(posedge clk)
+   always_comb
+//    always_ff @(posedge clk)
    
     begin
         case(funct)
@@ -56,8 +56,8 @@ always
             3:o=o3;
             
 
-            5:o={0,b[30:0]};
-            7:o={~b[31],b[30:0]};
+            5:o={0,a[30:0]};
+            7:o={~a[31],a[30:0]};
 
         default: o=32'bz;
         endcase
