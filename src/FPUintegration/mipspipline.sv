@@ -311,6 +311,7 @@ logic [1:0]  float_forwardaE, float_forwardbE;
  logic [31:0] aluoutE, aluoutW;
  logic [31:0] fpuoutE, fpuoutW,float_resultW;
  logic [31:0] readdataW, resultW;
+ logic [31:0] float_writedataM;
 //logic[31:0]float_readdataM, float_readdataW;//
  // hazard detection
  hazard    h(rsD, rtD, rsE, rtE, writeregE, writeregM, 
@@ -420,8 +421,9 @@ mux2 #(5)   float_wrmux(float_ftE, float_fdE, float_regdstE, float_writeregE);
 
  flopr #(32) floaT_r2M(clk, reset, fpuoutE, fpuoutM);
  flopr #(5)  float_r3M(clk, reset, float_writeregE, float_writeregM);
+ flopr #(32) float_r4M(clk, reset, float_srcb2E, float_writedataM);
  
- mux2 #(32) finalwrite(writedataM,fpuoutM,float_memwriteM,final_writedata);
+ mux2 #(32) finalwrite(writedataM,float_writedataM,float_memwriteM,final_writedata);
 
  // Writeback stage
  flopr #(32) r1W(clk, reset, aluoutM, aluoutW);
@@ -824,7 +826,7 @@ always @(negedge clk)
     begin
         if (memwrite) begin
             $display("dataadr  %d , writedata %d \n ",dataadr,writedata);
-            if (dataadr === 84 & writedata === 1<<31) begin
+            if (dataadr === 84 & writedata === 5<<31) begin
         	$display("ssuceed");
             $stop;
                  end
