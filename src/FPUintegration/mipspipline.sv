@@ -825,14 +825,15 @@ always
 always @(negedge clk)
     begin
         if (memwrite) begin
-            $display("dataadr  %d , writedata %d \n ",dataadr,writedata);
-            if (dataadr === 84 & writedata === 5<<31) begin
+                $display("dataadr  %d , writedata %d \n ",dataadr,writedata);
+                end
+            if (memwrite==1&&( dataadr === 84 & writedata === (1<<31)|(5))) begin
         	$display("ssuceed");
-            $stop;
-                 end
+          $stop;
+            end
             end 
             		
-    end
+    
 
 endmodule
 
