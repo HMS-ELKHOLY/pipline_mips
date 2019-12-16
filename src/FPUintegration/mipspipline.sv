@@ -826,7 +826,7 @@ always @(negedge clk)
     begin
         if (memwrite) begin
                 $display("dataadr  %d , writedata %d \n ",dataadr,writedata);
-                end
+                 end
             if (memwrite==1)
             begin
 
@@ -838,7 +838,7 @@ always @(negedge clk)
         end
             end 
             		
-    
+
 
 endmodule
 
